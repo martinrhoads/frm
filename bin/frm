@@ -19,7 +19,10 @@ def print_and_exit(message)
 end
 
 optparse = OptionParser.new do|opts|
-  opts.banner = "Usage: frm.rb [options] package1 [package2]B ..."
+  opts.banner = "Welcome to Effin Repo Manager
+FPM allows you to easily create debian repos on S3
+
+Usage: frm [options] package1 [package2] ..."
 
   options[:access_key] = nil
   opts.on( '-a', '--access-key ACCESS_KEY', 'S3 public access key' ) do |key|
@@ -80,7 +83,7 @@ end
 Dir.chdir(File.dirname(File.dirname(__FILE__)))
 
 # require the necessary FRM libs
-require File.join Dir.pwd, 'lib', 'deb'
+require File.join Dir.pwd, 'lib', 'fpm'
 
 puts "creating release..."
 package_release = FRM::PackageRelease.new(packages)
