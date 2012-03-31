@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+# This is the CLI interface into Effin Repo Manager
+
+require 'optparse'
+
+# This hash will hold all of the options
+# parsed from the command-line by
+# OptionParser.
+options = {}
+
+packages = []
+
+def print_and_exit(message)
+  puts 
+  puts message
+  puts 
+  puts `#{__FILE__} -h`
+  exit 1
+end
+
+optparse = OptionParser.new do|opts|
+  opts.banner = "Usage: frm.rb [options] package1 [package2]B ..."
+
+  options[:access_key] = nil
+  opts.on( '-a', '--access-key ACCESS_KEY', 'S3 public access key' ) do |key|
+    options[:access_key] = key
+  end
+
+
+  options[:secret_key] = nil
+  opts.on( '-s', '--secret-key SECRET_KEY', 'S3 private access key' ) do |key|
+    options[:secret_key] = key
+  end
+
+  options[:bucket] = nil
+  opts.on( '-b', '--bucket BUCKET', 'S3 bucket' ) do |bucket|
+    options[:bucket] = bucket
+  end
+
+  options[:prefix] = nil
+  opts.on( '-p', '--prefix PREFIX', 'S3 prefix of repostory' ) do |prefix|
+    options[:prefix] = prefix
+  end
+
+
+  # This displays the help screen, all programs are
+  # assumed to have this option.
+  opts.on( '-h', '--help', 'Display this screen' ) do
+    puts opts
+    exit
+  end
+end
+
+optparse.parse!
+
+
+ARGV.each do |package|
+  packages << package
+end
+
+
+# verify that the required inputs are set
+%w{access_key secret_key bucket prefix }.each do |input|
+  print_and_exit "you must specify the #{input} parameter!!!" if options.values_at(input.to_sym) == [nil]
+end
+
+# verify that we have at least one package to install
+print_and_exit "you need to specify at least one package to publish!!!" if packages.empty? 
+
+packages.each do |package|
+  print_and_exit "package '#{package}' does not exits!!!" unless File.exists?(package)
+  print_and_exit "package '#{package}' does not appear to be a valid deb" unless system("dpkg --field #{package} > /dev/null 2>&1 ")
+end
+
+
+# if we have gotten this far it means that all required parameters have been set, so let's begin
+
+
+# chdir to the top level of the code
+Dir.chdir(File.dirname(File.dirname(__FILE__)))
+
+# require the necessary FRM libs
+require File.join Dir.pwd, 'lib', 'deb'
+
+puts "creating release..."
+package_release = FRM::PackageRelease.new(packages)
+
+puts "pushing release..."
+release_pusher = FRM::ReleasePusher.new(package_release,options[:access_key],options[:secret_key],options[:bucket],options[:prefix])
+
+puts "looks like everything ran ok!"
