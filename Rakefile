@@ -1,13 +1,16 @@
 require 'bundler'
 Bundler::GemHelper.install_tasks
 
-frm_base = File.dirname __FILE__
+@frm_base = File.dirname __FILE__
+
+require File.join @frm_base, 'test', 'rake'
+
 
 namespace :bump do
   
   desc "bump the patch version number"
   task :patch do
-    version_file_path = File.join frm_base, 'lib', 'frm', 'version.rb'
+    version_file_path = File.join @frm_base, 'lib', 'frm', 'version.rb'
     current_version_file = File.read version_file_path
     current_version_file =~ /VERSION[^\d]+(\d+)\.(\d+)\.(\d+)(\.([^'"]*))?/
     major,minor,patch = $1, $2, $3

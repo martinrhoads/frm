@@ -1,6 +1,6 @@
 my_dir = File.dirname __FILE__
 STDERR.puts "#{File.join my_dir, 's3'}"
-require File.join my_dir, 'base'
+#require File.join my_dir, 'base'
 
 
 module FRM

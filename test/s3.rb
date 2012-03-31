@@ -1,8 +1,8 @@
 #!/usr/bin/env ruby
 
 require 'minitest/autorun'
-my_dir = File.dirname __FILE__
-require File.join my_dir, 's3'
+# my_dir = File.dirname __FILE__
+# require File.join my_dir, 's3'
 
 
 # this is a stupid hack to get the @@bucket region set properly

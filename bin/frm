@@ -20,7 +20,7 @@ end
 
 optparse = OptionParser.new do|opts|
   opts.banner = "Welcome to Effin Repo Manager
-FPM allows you to easily create debian repos on S3
+FRM allows you to easily create debian repos on S3
 
 Usage: frm [options] package1 [package2] ..."
 
@@ -83,7 +83,7 @@ end
 Dir.chdir(File.dirname(File.dirname(__FILE__)))
 
 # require the necessary FRM libs
-require File.join Dir.pwd, 'lib', 'fpm'
+require File.join Dir.pwd, 'lib', 'frm'
 
 puts "creating release..."
 package_release = FRM::PackageRelease.new(packages)

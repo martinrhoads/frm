@@ -1,3 +1,2 @@
-module Frm
-  # Your code goes here...
-end
+require File.join @frm_base, 'lib', 'frm', 'base'
+require File.join @frm_base, 'lib', 'frm', 's3'
