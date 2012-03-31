@@ -1,3 +1,0 @@
-module Fpm
-  # Your code goes here...
-end
