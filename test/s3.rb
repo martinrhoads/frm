@@ -4,6 +4,7 @@ require 'minitest/autorun'
 # my_dir = File.dirname __FILE__
 # require File.join my_dir, 's3'
 
+require 'mock-aws-s3'
 
 # this is a stupid hack to get the @@bucket region set properly
 DEFAULT_HOST =  's3-us-west-1.amazonaws.com'
@@ -14,7 +15,7 @@ class TestFRM < MiniTest::Unit::TestCase
   @@access_key_id = 'abcd'
   @@secret_key_id = '1234'
   @@bucket = 'some-bucket'
-  @@prefix = 'testing/tmp/' + Time.now.strftime("%Y/%m/%d/%H:%M:%S ")
+  @@prefix = 'testing/'
   @@server = 's3-us-west-1.amazonaws.com'
   @@timestamp = rand(9999).to_s
 
