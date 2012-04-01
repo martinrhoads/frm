@@ -2,85 +2,6 @@ DEFAULT_HOST =  's3-us-west-1.amazonaws.com' # stupid hack to point to
 # the right region
 
 module FRM
-
-    
-  class Base
-    my_dir = File.dirname __FILE__
-    require File.join my_dir, 's3'
-    require 'zlib'
-    require 'tempfile'
-    require 'digest/md5'
-    require 'digest/sha1'
-    require 'digest/sha2'
-    
-    def compute_md5(string)
-      Digest::MD5.hexdigest(string)
-    end
-    
-    def compute_sha1(string)
-      Digest::SHA1.hexdigest(string)
-    end
-    
-    def compute_sha2(string)
-      Digest::SHA2.hexdigest(string)
-    end
-
-    # TODO:
-    # there has to be a better way to use gpg withen ruby. found many
-    # broken solutions :\ 
-    def gpg_clearsign(message)
-      `echo "#{message}" | gpg --clearsign`
-    end
-
-    # TODO: same as above
-    def gpg_detached(message)
-      `echo "#{message}" | gpg -abs`
-    end
-    
-
-    def generate_gzip_pipe(contents)
-      read_buffer, write_buffer = IO.pipe
-      gzip_writer = Zlib::GzipWriter.new write_buffer
-      gzip_writer.mtime = 1 # ensure that the header is determinstic
-      gzip_writer.write contents
-      gzip_writer.close
-      read_buffer
-    end
-    
-    def gunzip_pipe(gziped_pipe)
-      gzip_reader = Zlib::GzipReader.new gziped_pipe
-      unzipped_string = gzip_reader.read
-      gzip_reader.close
-      return unzipped_string
-    end
-    
-    def parse_package_stub(read_buffer)
-      package = {}
-      stub = ""
-      while line = read_buffer.gets
-        return nil if line.strip.empty? 
-        raise "bad input" unless (match = line.match /^\w+\-?\w+?: /)
-        stub << line
-        key = match[0].delete ': ' # if match
-        value = match.post_match.strip
-        package[key] = value
-        if key == 'Description'
-          while (line = read_buffer.gets).strip != ""
-            package['Description'] << line
-            stub << line
-          end
-          package['Description'].rstrip!
-          return package, stub
-        end
-      end
-      nil
-    end
-    
-    def merge_package_file(in_pipe,out_pipe,package_list)
-      sorted_list = package_list.sort { |a,b| a['Package'] <=> b['Package'] }
-    end
-end
-  
   
   class Package < Base
     attr_accessor :repo_filename
@@ -262,47 +183,6 @@ Label: apt repository natty
 Architecture: amd64
 Description: Cloudscaling APT repository
 "
-    end
-    
-    
-    def generate_release
-      return "Origin: apt.cloudscaling.com
-     Label: apt repository natty
-     Codename: natty
-     Date: Thu, 22 Dec 2011 00:29:55 UTC
-     Architectures: amd64
-     Components: main universe multiverse
-     Description: Cloudscaling APT repository
-     MD5Sum:
-      a4b943ff89790ccdc186875dad67827b 5813 main/binary-amd64/Packages
-      004fd3f868ebbe7501fb2e1c0c54e2a7 2148 main/binary-amd64/Packages.gz
-      79dd2fee35fba7255dcd40e1f6529591 134 main/binary-amd64/Release
-      d41d8cd98f00b204e9800998ecf8427e 0 universe/binary-amd64/Packages
-      7029066c27ac6f5ef18d660d5741979a 20 universe/binary-amd64/Packages.gz
-      018c8e37146b908a6bde46012a83d4ba 138 universe/binary-amd64/Release
-      d41d8cd98f00b204e9800998ecf8427e 0 multiverse/binary-amd64/Packages
-      7029066c27ac6f5ef18d660d5741979a 20 multiverse/binary-amd64/Packages.gz
-      4680f88c741bad22529909db5be4f608 140 multiverse/binary-amd64/Release
-     SHA1:
-      6e03924030eab56cb9735a52ec710537e682bcfc 5813 main/binary-amd64/Packages
-      5f2989bae96e148cb5f18accc4357305926ab1e1 2148 main/binary-amd64/Packages.gz
-      6d932af9af761f418e5374f73dcd09badb4fe57e 134 main/binary-amd64/Release
-      da39a3ee5e6b4b0d3255bfef95601890afd80709 0 universe/binary-amd64/Packages
-      46c6643f07aa7f6bfe7118de926b86defc5087c4 20 universe/binary-amd64/Packages.gz
-      4d428e7ad434df47cffc40cabf8e238ee76ea434 138 universe/binary-amd64/Release
-      da39a3ee5e6b4b0d3255bfef95601890afd80709 0 multiverse/binary-amd64/Packages
-      46c6643f07aa7f6bfe7118de926b86defc5087c4 20 multiverse/binary-amd64/Packages.gz
-      c8a7d2eb24ece57d460106506fcff99cb2ada015 140 multiverse/binary-amd64/Release
-     SHA256:
-      dd8283f06beb4a5fc06ac62d3ae098e5ba2717daef2a15b5f3e9233eb64e0227 5813 main/binary-amd64/Packages
-      b197c5a3c1fe6a6d286e9f066a0cade289e3a2fc485c90407179951634788aa8 2148 main/binary-amd64/Packages.gz
-      690b44df6fe65f40f260b73394e87804df78c9ccf13999889259faeed3eec40d 134 main/binary-amd64/Release
-      e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 universe/binary-amd64/Packages
-      59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 universe/binary-amd64/Packages.gz
-      32f35b1fc2bdc5a11b53abeadaaa77771b15acb5305777484bf4390d697ae5bd 138 universe/binary-amd64/Release
-      e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 0 multiverse/binary-amd64/Packages
-      59869db34853933b239f1e2219cf7d431da006aa919635478511fabbfc8849d2 20 multiverse/binary-amd64/Packages.gz
-      f29816e3a4f90a8b4c688fdb2ac3056d5fb7349857c9ea8da2fbccf8e931baca 140 multiverse/binary-amd64/Release"
     end
     
     

@@ -1,5 +1,7 @@
 @@frm_test_base = File.join @frm_base, 'test'
 
+require File.join @@frm_test_base, 'lib', 'test'
+
 namespace :test do
   
   desc "run the s3 test"

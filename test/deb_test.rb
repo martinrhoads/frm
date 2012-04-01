@@ -126,27 +126,19 @@ class TestPackage < MiniTest::Unit::TestCase
     @package1 = FRM::Package.new(package)
   end
   
-  def test()
-    skip "TODO: fix me"
-    assert @package1.name == 'foo'
-    assert @package1.content == 'foo'
-  end
-
   def test_bad_file()
     bad_package = "/some/bad/path"
     assert_raises(RuntimeError) { FRM::Package.new(bad_package) } 
   end
   
   def test_good_file()
-    skip "TODO: fix me"
-    assert @package1.content.compute_md5 == '0faf8cabf49a615adacbe6d80c4aee3b'
+    assert Digest::MD5.hexdigest(@package1.content) == '0faf8cabf49a615adacbe6d80c4aee3b'
   end
 
   def test_hashes()
-    skip "fix test_hashes test"
-    assert @package1.md5 == 'acbd18db4cc2f85cedef654fccc4a4d8'
-    assert @package1.sha1 == '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33'
-    assert @package1.sha2 == '2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae'
+    assert @package1.md5 == '0faf8cabf49a615adacbe6d80c4aee3b'
+    assert @package1.sha1 == '78c6be70488c78d63b6eb233f891e80d3af0b779'
+    assert @package1.sha2 == '5f0de3c65226c13e9c215478ba784afe54b0592aa46766ff19b1140644bbda71'
     
   end
   
@@ -288,32 +280,7 @@ Description: Cloudscaling APT repository
 "
     assert @deb.generate_package_release == package_release_file
   end
-  
-  def test_generate_release
-    skip 'need to finish generate_release function'
-    release_file = "Origin: apt.cloudscaling.com
-Label: apt repository natty
-Codename: natty
-Date: Thu, 22 Dec 2011 00:29:55 UTC
-Architectures: amd64
-;Components: main universe multiverse
-Description: Cloudscaling APT repository
-MD5Sum:
- a4b943ff89790ccdc186875dad67827b 5813 main/binary-amd64/Packages
- 004fd3f868ebbe7501fb2e1c0c54e2a7 2148 main/binary-amd64/Packages.gz
- 79dd2fee35fba7255dcd40e1f6529591 134 main/binary-amd64/Release
-SHA1:
- 6e03924030eab56cb9735a52ec710537e682bcfc 5813 main/binary-amd64/Packages
- 5f2989bae96e148cb5f18accc4357305926ab1e1 2148 main/binary-amd64/Packages.gz
- 6d932af9af761f418e5374f73dcd09badb4fe57e 134 main/binary-amd64/Release
-SHA256:
- dd8283f06beb4a5fc06ac62d3ae098e5ba2717daef2a15b5f3e9233eb64e0227 5813 main/binary-amd64/Packages
- b197c5a3c1fe6a6d286e9f066a0cade289e3a2fc485c90407179951634788aa8 2148 main/binary-amd64/Packages.gz
- 690b44df6fe65f40f260b73394e87804df78c9ccf13999889259faeed3eec40d 134 main/binary-amd64/Release
-"
-    assert @deb.generate_release == release_file
-  end
-  
+    
   def generate_random_string
     rand(36**rand(50)).to_s(36)
   end

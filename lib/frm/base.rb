@@ -73,9 +73,9 @@ module FRM
     
     def merge_package_file(in_pipe,out_pipe,package_list)
       sorted_list = package_list.sort { |a,b| a['Package'] <=> b['Package'] }
-      while (next_stub = parse_package_stub in_pipe)
-        STDERR.puts "next_stub[0] = #{next_stub[0]}"
-      end
+      # while (next_stub = parse_package_stub in_pipe)
+      #   STDERR.puts "next_stub[0] = #{next_stub[0]}"
+      # end
     end
   end
 end
