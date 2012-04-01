@@ -78,9 +78,6 @@ module FRM
     
     def merge_package_file(in_pipe,out_pipe,package_list)
       sorted_list = package_list.sort { |a,b| a['Package'] <=> b['Package'] }
-      while (next_stub = parse_package_stub in_pipe)
-        STDERR.puts "next_stub[0] = #{next_stub[0]}"
-      end
     end
 end
   
@@ -89,6 +86,8 @@ end
     attr_accessor :repo_filename
     attr_reader :path, :content, :md5, :sha1, :sha2 , :size
     def initialize(path)
+      puts "path is #{path.inspect}"
+      raise "you need to specify a path!!!" if path.nil?
       @path = path
       raise "Can not find file '#{path}'" unless File.exists?(path)
       begin

@@ -1,0 +1,155 @@
+Package: kyotocabinet
+Version: 1.2.68
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Standards-Version: 3.9.1
+Homepage: http://nourlgiven.example.com/no/url/given
+Priority: extra
+Section: default
+Filename: pool/main/k/kyotocabinet/kyotocabinet_1.2.68_amd64.deb
+Size: 3718964
+SHA256: 0646abf6c54a00afd213272386fb58ca777357bee99a53464b6f9a6e79344fde
+SHA1: 6d2fb30095bb6ca876ca2ffc22523911aede9dfa
+MD5sum: f1fc7e4c0bc8e3874d37c8df668c6fb3
+Description: no description given
+
+Package: pod-services
+Version: 0.0.4
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Depends: zeromq, kyotocabinet, ruby1.9.2-full, libavahi-compat-libdnssd1, rubygem-bundler
+Standards-Version: 3.9.1
+Homepage: http://nourlgiven.example.com/no/url/given
+Priority: extra
+Section: default
+Filename: pool/main/p/pod-services/pod-services_0.0.4_amd64.deb
+Size: 59230358
+SHA256: 6c5e8044d13dfb1c337767474a8094416c0913650aff71a2fe4aaec4d0f8ee9d
+SHA1: 467fcc65ed729c845bad981743b5774e359a40df
+MD5sum: 4b6ed193ca6d4d8002e39413b8966cca
+Description: no description given
+
+Package: python-kyotocabinet
+Version: 1.1
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Depends: kyotocabinet
+Standards-Version: 3.9.1
+Homepage: http://fallabs.com/kyotocabinet/
+Priority: extra
+Section: default
+Filename: pool/main/p/python-kyotocabinet/python-kyotocabinet_1.1_amd64.deb
+Size: 1309704
+SHA256: f71dcafe4074bbbe68105d9dcd4700313f2543147a88e10392761736719b83a1
+SHA1: b0772977ec9c1d4b8313b76f20188b24646ea8fb
+MD5sum: cf02d0adc90e110893165834a0993c0d
+Description: a straightforward implementation of DBM
+
+Package: python-netifaces
+Version: 0.5
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Standards-Version: 3.9.1
+Homepage: http://alastairs-place.net/netifaces
+Priority: extra
+Section: default
+Filename: pool/main/p/python-netifaces/python-netifaces_0.5_amd64.deb
+Size: 14126
+SHA256: 433969c5ff6e56a5c5ca9925c01ecc1df591080e95544d4f0ee61fa9d263abf4
+SHA1: 512bc3b46bbc8d7b45fda8ff496c6cee6208bf03
+MD5sum: 66e6739aadb3c6e3def550b36ac10eeb
+Description: Portable network interface information.
+
+Package: python-pybonjour
+Version: 1.1.1
+Architecture: all
+Maintainer: <jenkins@ci>
+Depends: libavahi-compat-libdnssd1
+Standards-Version: 3.9.1
+Homepage: http://o2s.csail.mit.edu/o2s-wiki/pybonjour
+Priority: extra
+Section: default
+Filename: pool/main/p/python-pybonjour/python-pybonjour_1.1.1_all.deb
+Size: 30490
+SHA256: 7e23aeb59599f60da61acd3275038d5603515e00b215a2dd94a222c648c2bc8a
+SHA1: ae97584f4471165306fea16d9cd0628f1b7f797f
+MD5sum: efa7004bbffc372abeb99070997e295b
+Description: Pure-Python interface to Apple Bonjour and compatible DNS-SD libraries
+
+Package: python-pyzmq
+Version: 2.1.7.1
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Depends: zeromq
+Standards-Version: 3.9.1
+Homepage: http://github.com/zeromq/pyzmq
+Priority: extra
+Section: default
+Filename: pool/main/p/python-pyzmq/python-pyzmq_2.1.7.1_amd64.deb
+Size: 1198458
+SHA256: 039fac7f7dbf0c5c8da6179a13756a216cf8c7d192c8c451631a005a10e6085d
+SHA1: 6f34087234c6c64d5563249bcbe0ae789807cf50
+MD5sum: bd0364643376bce244b87f6cc4824896
+Description: Python bindings for 0MQ.
+
+Package: python-thlayli
+Version: 0.3
+Architecture: all
+Maintainer: <jenkins@ci>
+Depends: python-netifaces (>= 0), python-kyotocabinet (>= 0), python-pybonjour (>= 0), python-pyzmq (>= 0)
+Standards-Version: 3.9.1
+Homepage: http://clouldscaling.com/
+Priority: extra
+Section: default
+Filename: pool/main/p/python-thlayli/python-thlayli_0.3_all.deb
+Size: 13426
+SHA256: f860439b4db71b5bd85d103b4460dce8464c468d00a8632e3ae1a0a32cc35c57
+SHA1: a457cfbc4737acbe1def6c49c0ca56ff5d425479
+MD5sum: 3dd096d608ad55b04754bc1ad4ac3457
+Description: Thlayli is a simple tuplespace for coordinating distributed work.
+
+Package: ruby1.9.2-full
+Version: 1.9.2
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Standards-Version: 3.9.1
+Homepage: http://nourlgiven.example.com/no/url/given
+Priority: extra
+Section: default
+Filename: pool/main/r/ruby1.9.2-full/ruby1.9.2-full_1.9.2_amd64.deb
+Size: 10923378
+SHA256: 1640650ad27b765681d9148f0e23f40b5d86ba6e60370f63bf6402fb0fec4f6f
+SHA1: d9748b34ca4d2a284bac86ec3040f685adc4964c
+MD5sum: 2baa87f011d61b8a884ded2a0ccf43d8
+Description: no description given
+
+Package: rubygem-bundler
+Version: 1.0.18
+Architecture: all
+Maintainer: AndrÃ© Arko
+Standards-Version: 3.9.1
+Homepage: http://gembundler.com
+Priority: extra
+Section: Languages/Development/Ruby
+Filename: pool/main/r/rubygem-bundler/rubygem-bundler_1.0.18_all.deb
+Size: 341144
+SHA256: b2e51a45a90707261ed36648847409783542fc092bc18a11a63a1db0b76ca4b3
+SHA1: ca3d01e1e0e3608b785562bc5d31d413e74e0d77
+MD5sum: 13d7db51446b5bbed40f8db407597733
+Description: Bundler manages an application's dependencies through its entire life, across many machines, systematically and repeatably
+
+Package: zeromq
+Version: 2.1.7
+Architecture: amd64
+Maintainer: <jenkins@ci>
+Standards-Version: 3.9.1
+Homepage: http://nourlgiven.example.com/no/url/given
+Priority: extra
+Section: default
+Filename: pool/main/z/zeromq/zeromq_2.1.7_amd64.deb
+Size: 1899468
+SHA256: e41fcb46155591beb120a95f11a574e39e7a4e60e61f373ba1843d5fea63f280
+SHA1: d25801f69462a1b9d1a91c396de98d9a7b4c2e95
+MD5sum: 48b46e195bd4ea7d6140e1ca1520a199
+Description: no description given
+

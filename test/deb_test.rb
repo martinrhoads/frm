@@ -64,7 +64,7 @@ class TestReleasePusher < MiniTest::Unit::TestCase
   end
 
   def test
-    puts "@release_pusher.inspect = #{@release_pusher.inspect}"
+#    puts "@release_pusher.inspect = #{@release_pusher.inspect}"
   end
   
 end
@@ -446,7 +446,7 @@ Description: no description given
 
   
   def test_merge_package_file
-    package_file = File.open 'Packages.txt'
+    package_file = File.open File.join @@frm_test_base, 'Packages.txt'
     read_buffer, write_buffer = IO.pipe
 
     @deb.merge_package_file(package_file,write_buffer,@hash)
