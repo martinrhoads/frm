@@ -10,6 +10,9 @@ However, after creating packages, the next pain-point is how to actually
 publish those packages for internal testing/verification and finally for public
 consumption. That is, until FRM!
 
+Previous solutions require you either to host your own repo and use several tools like 
+reprepro along with a webserver, or to be confined to the requirements of a PPA.
+
 ## What is frm?
 
 FRM is a simple solution for creating cloud-based repos. It is a small ruby 
@@ -51,6 +54,7 @@ Running it:
 
 Although FRM is great, it's not perfect. Here are some things that we already know about: 
 
+* can only create new repositories (merging into existing repos comming soon;)
 * currently only works for natty (soon to be fixed)
 * currently only works for debian packages (would be pretty easy to add support for rpm /me thinks. holler if u want)
 * shells out to gpg (could not find a decent ruby solution to create detached signatures. plz holler if u know one!)
