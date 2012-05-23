@@ -45,6 +45,11 @@ Usage: frm [options] package1 [package2] ..."
     options[:prefix] = prefix
   end
 
+  options[:release] = `lsb_release -cs`.strip
+  opts.on('-r','--release RELEASE','release of deb packages') do |release|
+    options[:release] = release
+  end
+
 
   # This displays the help screen, all programs are
   # assumed to have this option.
@@ -86,7 +91,7 @@ Dir.chdir(File.dirname(File.dirname(__FILE__)))
 require File.join Dir.pwd, 'lib', 'frm'
 
 puts "creating release..."
-package_release = FRM::PackageRelease.new(packages)
+package_release = FRM::PackageRelease.new(packages,options[:release])
 
 puts "pushing release..."
 release_pusher = FRM::ReleasePusher.new(package_release,options[:access_key],options[:secret_key],options[:bucket],options[:prefix])

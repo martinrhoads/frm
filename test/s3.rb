@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require 'mock-aws-s3'
 
 # this is a stupid hack to get the @@bucket region set properly
-DEFAULT_HOST =  's3-us-west-1.amazonaws.com'
+#DEFAULT_HOST =  's3-us-west-1.amazonaws.com'
 
 class TestFRM < MiniTest::Unit::TestCase
 
