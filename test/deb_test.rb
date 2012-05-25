@@ -270,8 +270,6 @@ SHA256: fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9
 Description: no description given
 
 '
-    STDERR.puts "@deb.generate_package_file(@hash) is "
-    STDERR.puts @deb.generate_package_file(@hash)
     assert @deb.generate_package_file(@hash) == correct_output
   end
 

@@ -1,12 +1,5 @@
 module FRM
   class Base
-    # my_dir = File.dirname __FILE__
-    # require File.join my_dir, 's3'
-    require 'zlib'
-    require 'tempfile'
-    require 'digest/md5'
-    require 'digest/sha1'
-    require 'digest/sha2'
     
     def compute_md5(string)
       Digest::MD5.hexdigest(string)
