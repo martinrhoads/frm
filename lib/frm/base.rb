@@ -73,9 +73,56 @@ module FRM
     
     def merge_package_file(in_pipe,out_pipe,package_list)
       sorted_list = package_list.sort { |a,b| a['Package'] <=> b['Package'] }
-      # while (next_stub = parse_package_stub in_pipe)
-      #   STDERR.puts "next_stub[0] = #{next_stub[0]}"
-      # end
+      merge(in_pipe,out_pipe,sorted_list)
     end
+    
+    private 
+
+    def create_package_stub(package_hash)
+      return_value = ''
+      package_hash.each do |key,value|
+        return_value << "#{key}: #{value}\n"
+      end
+      return_value << "\n"
+    end
+
+    def merge(in_pipe,out_pipe,package_list)
+      return if out_pipe.closed? 
+      return if in_pipe.closed? and package_list.empty
+
+      if package_list.empty? 
+        while line = in_pipe.gets
+          out_pipe.puts line
+        end
+        in_pipe.close
+        out_pipe.close
+        return
+      end
+
+      if in_pipe.closed? 
+        package_list.each {|package_hash| out_pipe.write(create_package_stub(package_hash)) }
+        out_pipe.close 
+        return
+      end
+      
+      current_package, stub = parse_package_stub in_pipe
+
+      if current_package['Package'] < package_list.first['Package']
+        out_pipe.puts stub
+        out_pipe.puts ""
+        merge(in_pipe,out_pipe,package_list)
+        return
+      elsif current_package['Package'] > package_list.first['Package']
+        while ( ! package_list.empty? ) and current_package['Package'] > package_list.first['Package'] 
+          out_pipe.write create_package_stub(package_list.shift)
+        end
+      elsif current_package['Package'] == package_list.first['Package']
+        out_pipe.write create_package_stub(package_list.shift)
+      end
+      
+      merge(in_pipe,out_pipe,package_list)
+      return nil 
+    end
+    
   end
 end

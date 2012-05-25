@@ -178,6 +178,17 @@ class TestDeb < MiniTest::Unit::TestCase
                "Depends" => %w{one two three},
                "section" => "main",
                "path_to_deb" => '/tmp/bar_1.2.3.4_amd64.deb'
+             },
+             {
+               "Package" => "qqq",
+               "Version" => "1.2.3.4",
+               "Architecture" => "amd64",
+               "Maintainer" => "support@cloudscaling.com",
+               "Homepage" => "http://www.cloudscaling.com",
+               "Priority" => "extra",
+               "Depends" => %w{one two three},
+               "section" => "main",
+               "path_to_deb" => '/tmp/bar_1.2.3.4_amd64.deb'
              }
             ]
   end
@@ -214,7 +225,21 @@ Description: some
 
   
   def  test_generate_package_file
-    correct_output = "Package: foo
+correct_output = 'Package: bar
+Version: 1.2.3.4
+Architecture: amd64
+Maintainer: <support@cloudscaling.com>
+Homepage: http://www.cloudscaling.com
+Priority: extra
+Depends: one, two, three
+Filename: pool/main/b/bar/bar_1.2.3.4_amd64.deb
+Size: 3
+MD5sum: 37b51d194a7513e45b56f6524f2d51f2
+SHA1: 62cdb7020ff920e5aa642c3d4066950dd1f01f4d
+SHA256: fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9
+Description: no description given
+
+Package: foo
 Version: 1.2.68
 Architecture: amd64
 Maintainer: <support@cloudscaling.com>
@@ -230,21 +255,23 @@ Description: some
  multiline
  description
 
-Package: bar
+Package: qqq
 Version: 1.2.3.4
 Architecture: amd64
 Maintainer: <support@cloudscaling.com>
 Homepage: http://www.cloudscaling.com
 Priority: extra
 Depends: one, two, three
-Filename: pool/main/b/bar/bar_1.2.3.4_amd64.deb
+Filename: pool/main/q/qqq/qqq_1.2.3.4_amd64.deb
 Size: 3
 MD5sum: 37b51d194a7513e45b56f6524f2d51f2
 SHA1: 62cdb7020ff920e5aa642c3d4066950dd1f01f4d
 SHA256: fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9
 Description: no description given
 
-"
+'
+    STDERR.puts "@deb.generate_package_file(@hash) is "
+    STDERR.puts @deb.generate_package_file(@hash)
     assert @deb.generate_package_file(@hash) == correct_output
   end
 
@@ -329,9 +356,8 @@ Description: no description given
   def test_merge_package_file
     package_file = File.open File.join @@frm_test_base, 'Packages.txt'
     read_buffer, write_buffer = IO.pipe
-
-    @deb.merge_package_file(package_file,write_buffer,@hash)
-    
+    merged_list = @deb.merge_package_file(package_file,write_buffer,@hash)
+    assert true
   end
   
   

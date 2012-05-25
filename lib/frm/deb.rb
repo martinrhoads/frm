@@ -154,7 +154,7 @@ Description: Cloudscaling APT repository
     end
     
     def generate_package_file(in_packages=[])
-      packages = in_packages.dup
+      packages = in_packages.sort { |a,b| a['Package'] <=> b['Package'] }
       package_file = ''
       packages.each { |package| package_file << generate_package_stub(package) }
       return package_file
