@@ -14,6 +14,13 @@ module FRM
       @short_release_file = generate_short_release_file
       @release_file = generate_release_file
     end
+
+    def overwrite_package_file(new_package_file)
+      @package_file = new_package_file.dup
+      @gzipped_package_file = generate_gzip_pipe(@package_file).read
+      @short_release_file = generate_short_release_file
+      @release_file = generate_release_file
+    end
     
     private
     
