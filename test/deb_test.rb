@@ -94,7 +94,7 @@ Description: Cloudscaling APT repository
 Label: apt repository natty
 Codename: natty
 Date: Thu, 22 Dec 2011 00:29:55 UTC
-Architectures: amd64
+Architectures: amd64 i386
 Components: main universe multiverse
 Description: Cloudscaling APT repository
 MD5Sum:

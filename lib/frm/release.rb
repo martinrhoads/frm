@@ -1,7 +1,7 @@
 module FRM
   
   class PackageRelease < Base
-    attr_reader :packages, :standards_version, :priority, :package_file, :gzipped_package_file, :release_file, :short_release_file, :component, :release
+    attr_reader :packages, :standards_version, :priority, :package_file, :gzipped_package_file, :release_file, :short_release_file, :component, :release, :i386_release_file, :i386_packages_file, :gzipped_i386_packages_file
     def initialize(packages={},release='natty',component='main/binary-amd64')
       @release = release
       @component = component
@@ -9,6 +9,18 @@ module FRM
       @priority = priority
       @packages = []
       packages.each { |package| @packages << Package.new(package,@release) }
+      if component == 'main/binary-amd64'
+        generate_i386_stubs
+      end
+      @i386_release_file = <<EOF
+Component: main
+Origin: apt.cloudscaling.com
+Label: apt repository #{@release}
+Architecture: i386
+Description: Cloudscaling APT repository
+EOF
+      @i386_packages_file = ""
+      @gzipped_i386_packages_file = generate_gzip_pipe(@i386_packages_file).read
       @package_file = generate_package_file
       @gzipped_package_file = generate_gzip_pipe(@package_file).read
       @short_release_file = generate_short_release_file
@@ -16,30 +28,46 @@ module FRM
     end
     
     private
+
+    
+    # ubuntu precicse 64 wants i386 debs by default :\
+    def generate_i386_stubs()
+    end
+
     
     def generate_release_file()
       partial_release_file = "Origin: apt.cloudscaling.com
 Label: apt repository #{@release}
 Codename: #{@release}
 Date: Thu, 22 Dec 2011 00:29:55 UTC
-Architectures: amd64
+Architectures: amd64 i386
 Components: main universe multiverse
 Description: Cloudscaling APT repository
 MD5Sum:
  #{compute_md5(@package_file)} #{@package_file.size} #{@component}/Packages
  #{compute_md5(@gzipped_package_file)} #{@gzipped_package_file.size} #{@component}/Packages.gz
  #{compute_md5(@short_release_file)} #{@short_release_file.size} #{@component}/Release
+ #{compute_md5(@i386_packages_file)} #{@i386_packages_file.size} main/binary-i386/Packages
+ #{compute_md5(@gzipped_i386_packages_file)} #{@gzipped_i386_packages_file.size} main/binary-i386/Packages.gz
+ #{compute_md5(@i386_release_file)} #{@i386_release_file.size} main/binary-i386/Release
 SHA1:
  #{compute_sha1(@package_file)} #{@package_file.size} #{@component}/Packages
  #{compute_sha1(@gzipped_package_file)} #{@gzipped_package_file.size} #{@component}/Packages.gz
  #{compute_sha1(@short_release_file)} #{@short_release_file.size} #{@component}/Release
+ #{compute_sha1(@i386_packages_file)} #{@i386_packages_file.size} main/binary-i386/Packages
+ #{compute_sha1(@gzipped_i386_packages_file)} #{@gzipped_i386_packages_file.size} main/binary-i386/Packages.gz
+ #{compute_sha1(@i386_release_file)} #{@i386_release_file.size} main/binary-i386/Release
 SHA256:
  #{compute_sha2(@package_file)} #{@package_file.size} #{@component}/Packages
  #{compute_sha2(@gzipped_package_file)} #{@gzipped_package_file.size} #{@component}/Packages.gz
  #{compute_sha2(@short_release_file)} #{@short_release_file.size} #{@component}/Release
+ #{compute_sha2(@i386_packages_file)} #{@i386_packages_file.size} main/binary-i386/Packages
+ #{compute_sha2(@gzipped_i386_packages_file)} #{@gzipped_i386_packages_file.size} main/binary-i386/Packages.gz
+ #{compute_sha2(@i386_release_file)} #{@i386_release_file.size} main/binary-i386/Release
 "
       return partial_release_file
     end
+
 
     def generate_short_release_file
       "Component: main
@@ -47,7 +75,7 @@ Origin: apt.cloudscaling.com
 Label: apt repository #{@release}
 Architecture: amd64
 Description: Cloudscaling APT repository
-"
+"
     end
     
 

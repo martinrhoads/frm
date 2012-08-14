@@ -28,6 +28,12 @@ module FRM
       @s3.put(release_file_path + '/Release',package_release.short_release_file,@bucket)
       @s3.put(release_file_path + '/Packages',package_release.package_file,@bucket)
       @s3.put(release_file_path + '/Packages.gz',package_release.gzipped_package_file,@bucket)
+
+
+      i386_release_file_path = @prefix + "/dists/#{@release}/" + 'main/binary-i386'
+      @s3.put(i386_release_file_path + '/Release',package_release.i386_release_file,@bucket)
+      @s3.put(i386_release_file_path + '/Packages',package_release.i386_packages_file,@bucket)
+      @s3.put(i386_release_file_path + '/Packages.gz',package_release.gzipped_i386_packages_file,@bucket)
     end
     
 
