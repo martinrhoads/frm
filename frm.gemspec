@@ -20,8 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["bin"]
   s.require_paths = ["lib"]
 
-  s.add_dependency('aws-s3')
+  s.add_dependency('aws-sdk')
 
-  s.add_development_dependency('mock-aws-s3')	
 end
 

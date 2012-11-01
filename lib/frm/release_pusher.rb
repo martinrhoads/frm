@@ -1,11 +1,11 @@
 module FRM
   
   class ReleasePusher < Base
-    def initialize(package_release,access_key,secret_key,bucket,prefix,server='s3-us-west-1.amazonaws.com')
+    def initialize(package_release,access_key,secret_key,bucket,prefix)
       @release = package_release.release
       @bucket = bucket
       @prefix = prefix
-      @s3 = FRM::S3.new(access_key,secret_key,server)
+      @s3 = FRM::S3.new(access_key,secret_key)
       push_packages(package_release.packages)
       push_release_files(package_release)
     end

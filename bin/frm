@@ -63,7 +63,7 @@ optparse.parse!
 
 
 ARGV.each do |package|
-  packages << package
+  packages << File.join(Dir.pwd,package)
 end
 
 

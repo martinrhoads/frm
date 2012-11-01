@@ -1,28 +1,27 @@
-my_dir = File.dirname __FILE__
-STDERR.puts "#{File.join my_dir, 's3'}"
-#require File.join my_dir, 'base'
-
+require 'aws-sdk'
 
 module FRM
   class S3  < Base
-    attr_reader :max_retries
-    @connection
-    def initialize(access_key_id,secret_access_key,server='s3.amazonaws.com')
-      require 'aws/s3'
+
+    attr_reader :max_retries, :s3
+
+    def initialize(access_key_id,secret_access_key)
       @max_retries = 10
-      @connection = AWS::S3::Base.establish_connection!(:access_key_id     => access_key_id,
-                                                        :secret_access_key => secret_access_key,
-                                                        :server => server )
+      AWS.config(:access_key_id => access_key_id, 
+                 :secret_access_key => secret_access_key)
+      @s3 = AWS::S3.new
     end
+
     
     def key?(key,bucket)
-      AWS::S3::S3Object.exists?(key,bucket)
+      @s3.buckets[bucket].objects[key].exists?
     end
+
     
     def put(key,value,bucket)
       @max_retries.times do |i|
         begin
-          AWS::S3::S3Object.store(key,value,bucket,:server => 's3-us-west-1.amazonaws.com',:access => :public_read)
+          @s3.buckets[bucket].objects[key].write(value)
           return true
         rescue Object => o
           print_retry(__method__,o)
@@ -31,12 +30,12 @@ module FRM
       end
       raise "could not put object!!!"
     end
-
+    
+    
     def get(key,bucket)
       @max_retries.times do |i|
         begin
-          value = AWS::S3::S3Object.value(key,bucket)
-          return value
+          return @s3.buckets[bucket].objects[key].read
         rescue Object => o
           print_retry(__method__,o)
         end
@@ -45,32 +44,21 @@ module FRM
       raise "could not get object!!!"
     end
     
-    def get_stream(key,bucket)
-      @max_retries.times do |i|
-        begin
-          stream = AWS::S3::S3Object.stream(key,bucket)
-          return stream
-        rescue Object => o
-          print_retry(__method__,o)
-        end
-        raise "could not get object!!!" if i == (@max_retries - 1)
-      end
-      raise "could not get object!!!"
-    end
     
     def delete(key,bucket)
       begin
-        AWS::S3::S3Object.delete(key,bucket)
-        true
+        @s3.buckets[bucket].objects[object].delete
+        return true
       rescue Object => o
         print_retry(__method__,o)
       end
     end
 
-    def move(old_key,new_key,vucket)
+
+    def move(old_key,new_key,bucket)
       begin
-        AWS::S3::S3Object.rename(old_key,new_key,bucket)
-        return
+        @s3.buckets[bucket].objects[old_key].move_to(new_key)
+        return true
       rescue Object => o
         print_retry(__method__,o)
       end
