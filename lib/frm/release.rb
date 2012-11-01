@@ -81,7 +81,7 @@ Description: Cloudscaling APT repository
 
     def filename(package)
       filename = File.basename package.path
-      shortname = `dpkg --field #{package.path} Package`.chomp
+      shortname = run("dpkg --field #{package.path} Package")
       first_letter = shortname[0]
       package.repo_filename = "pool/main/#{first_letter}/#{shortname}/#{filename}"
     end
@@ -94,7 +94,7 @@ Description: Cloudscaling APT repository
     
     def generate_package_stub(package)
       package_stub = ''
-      package_stub << `dpkg --field #{package.path}`
+      package_stub << run("dpkg --field #{package.path}") + "\n"
       package_stub << "Filename: #{filename(package)}\n"
       package_stub << "Size: #{package.size}\n"
       package_stub << "MD5sum: #{package.md5}\n"

@@ -13,16 +13,27 @@ module FRM
       Digest::SHA2.hexdigest(string)
     end
 
+    def run(command)
+      output = `#{command} 2>&1`.chomp
+      unless $?.success?
+        STDERR.puts "failed to run command: #{command}"
+        STDERR.puts "output was: "
+        STDERR.puts output
+        raise "failed to run command: #{command}"
+      end
+      return output
+    end
+
     # TODO:
     # there has to be a better way to use gpg withen ruby. found many
     # broken solutions :\ 
     def gpg_clearsign(message)
-      `echo "#{message}" | gpg --clearsign`
+      run "echo '#{message}' | gpg --clearsign"
     end
 
     # TODO: same as above
     def gpg_detached(message)
-      `echo "#{message}" | gpg -abs`
+      run "echo '#{message}' | gpg -abs"
     end
     
 
