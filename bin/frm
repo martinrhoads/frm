@@ -50,6 +50,17 @@ Usage: frm [options] package1 [package2] ..."
     options[:release] = release
   end
 
+  options[:public_repo] = false
+  opts.on('-P','--public-repo true|false','public repo or not') do |public_repo|
+    raise "public_repo option can only be 'true' or 'false'" \
+      unless public_repo == 'true' || public_repo == 'false'
+    if public_repo == 'true'
+      options[:public_repo] = true
+    else
+      options[:public_repo] = false
+    end      
+  end
+
 
   # This displays the help screen, all programs are
   # assumed to have this option.
@@ -94,6 +105,6 @@ puts "creating release..."
 package_release = FRM::PackageRelease.new(packages,options[:release])
 
 puts "pushing release..."
-release_pusher = FRM::ReleasePusher.new(package_release,options[:access_key],options[:secret_key],options[:bucket],options[:prefix])
+release_pusher = FRM::ReleasePusher.new(package_release,options[:access_key],options[:secret_key],options[:bucket],options[:prefix],options[:public_repo])
 
 puts "looks like everything ran ok!"

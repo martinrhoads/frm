@@ -1,11 +1,11 @@
 module FRM
   
   class ReleasePusher < Base
-    def initialize(package_release,access_key,secret_key,bucket,prefix)
+    def initialize(package_release,access_key,secret_key,bucket,prefix,public_repo=false)
       @release = package_release.release
       @bucket = bucket
       @prefix = prefix
-      @s3 = FRM::S3.new(access_key,secret_key)
+      @s3 = FRM::S3.new(access_key,secret_key,public_repo)
       push_packages(package_release.packages)
       push_release_files(package_release)
     end
@@ -34,6 +34,8 @@ module FRM
       @s3.put(i386_release_file_path + '/Release',package_release.i386_release_file,@bucket)
       @s3.put(i386_release_file_path + '/Packages',package_release.i386_packages_file,@bucket)
       @s3.put(i386_release_file_path + '/Packages.gz',package_release.gzipped_i386_packages_file,@bucket)
+      # push public key
+      @s3.put(@prefix + '/public.key',gpg_export_pubkey,@bucket)
     end
     
 

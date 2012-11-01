@@ -35,6 +35,11 @@ module FRM
     def gpg_detached(message)
       run "echo '#{message}' | gpg -abs"
     end
+
+    # TODO: same as above
+    def gpg_export_pubkey
+      run "gpg --armor --export"
+    end
     
 
     def generate_gzip_pipe(contents)

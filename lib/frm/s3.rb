@@ -3,13 +3,14 @@ require 'aws-sdk'
 module FRM
   class S3  < Base
 
-    attr_reader :max_retries, :s3
+    attr_reader :max_retries, :s3, :acl
 
-    def initialize(access_key_id,secret_access_key)
+    def initialize(access_key_id,secret_access_key,public_repo=false)
       @max_retries = 10
       AWS.config(:access_key_id => access_key_id, 
                  :secret_access_key => secret_access_key)
       @s3 = AWS::S3.new
+      @acl = public_repo ? :public_read : :private
     end
 
     
@@ -21,7 +22,7 @@ module FRM
     def put(key,value,bucket)
       @max_retries.times do |i|
         begin
-          @s3.buckets[bucket].objects[key].write(value)
+          @s3.buckets[bucket].objects[key].write(value,acl: @acl)
           return true
         rescue Object => o
           print_retry(__method__,o)
