@@ -69,7 +69,8 @@ module FRM
         value = match.post_match.strip
         package[key] = value
         if key == 'Description'
-          while (line = read_buffer.gets).strip != ""
+          while new_line = read_buffer.gets
+            line = new_line.strip
             package['Description'] << line
             stub << line
           end
@@ -116,6 +117,8 @@ module FRM
       
       current_package, stub = parse_package_stub in_pipe
 
+      STDERR.puts "current_package.inspect is #{current_package.inspect}"
+      STDERR.puts "package_list.first is #{package_list.first['Package']}"
       if current_package['Package'] < package_list.first['Package']
         out_pipe.puts stub
         out_pipe.puts ""
