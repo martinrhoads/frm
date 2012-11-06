@@ -14,8 +14,15 @@ module FRM
     end
 
     
-    def key?(key,bucket)
+    def exists?(key,bucket)
       @s3.buckets[bucket].objects[key].exists?
+    end
+
+    def etag(key,bucket)
+      # stupid method call is actually putting quotes in the string,
+      # so let's remove those:
+      quoted_etag = @s3.buckets[bucket].objects[key].etag
+      return quoted_etag.gsub(/"/,'')
     end
 
     
