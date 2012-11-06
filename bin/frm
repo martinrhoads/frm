@@ -74,7 +74,7 @@ optparse.parse!
 
 
 ARGV.each do |package|
-  packages << File.join(Dir.pwd,package)
+  packages << package
 end
 
 
@@ -87,7 +87,8 @@ end
 print_and_exit "you need to specify at least one package to publish!!!" if packages.empty? 
 
 packages.each do |package|
-  print_and_exit "package '#{package}' does not exits!!!" unless File.exists?(package)
+    puts "package is #{package}"
+  print_and_exit "package '#{package}' does not exist!!!" unless File.exists?(package)
   print_and_exit "package '#{package}' does not appear to be a valid deb" unless system("dpkg --field #{package} > /dev/null 2>&1 ")
 end
 
@@ -95,11 +96,8 @@ end
 # if we have gotten this far it means that all required parameters have been set, so let's begin
 
 
-# chdir to the top level of the code
-Dir.chdir(File.dirname(File.dirname(__FILE__)))
-
 # require the necessary FRM libs
-require File.join Dir.pwd, 'lib', 'frm'
+require_relative '../lib/frm'
 
 puts "creating release..."
 package_release = FRM::PackageRelease.new(packages,options[:release])
