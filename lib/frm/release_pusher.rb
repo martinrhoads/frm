@@ -45,7 +45,18 @@ module FRM
     
     def push_package(package)
       remote_path = @prefix + '/' + package.repo_filename
-      @s3.put(remote_path,package.content,@bucket)
+      if @s3.exists?(remote_path,@bucket) 
+        unless @s3.etag(remote_path,@bucket) == package.md5
+          error_message = <<EOE
+trying to overwrite this package file: #{remote_path}
+local md5 is #{package.md5}
+remote md5 (etag) is #{@s3.etag(remote_path,@bucket)}
+EOE
+          raise error_message
+        end
+      else
+        @s3.put(remote_path,package.content,@bucket)
+      end
     end
     
 
