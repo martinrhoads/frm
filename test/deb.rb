@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'minitest/autorun'
-require 'mock-aws-s3'
+#require 'mock-aws-s3'
 
 class TestReleasePusher < MiniTest::Unit::TestCase
   def setup

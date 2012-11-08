@@ -1,5 +1,8 @@
 module FRM
   class Base
+    def initialize
+      @retries = 3
+    end
     
     def compute_md5(string)
       Digest::MD5.hexdigest(string)
@@ -58,83 +61,24 @@ module FRM
       return unzipped_string
     end
     
-    def parse_package_stub(read_buffer)
-      package = {}
-      stub = ""
-      while line = read_buffer.gets
-        return nil if line.strip.empty? 
-        raise "bad input" unless (match = line.match /^\w+\-?\w+?: /)
-        stub << line
-        key = match[0].delete ': ' # if match
-        value = match.post_match.strip
-        package[key] = value
-        if key == 'Description'
-          while new_line = read_buffer.gets
-            line = new_line.strip
-            package['Description'] << line
-            stub << line
-          end
-          package['Description'].rstrip!
-          return package, stub
+    def handle_errors(&block)
+      retries = 0
+      begin
+        yield
+      rescue Object => error_object
+        if retries < @retries
+          sleep(2**retries * 1) #exponential backoff, 1s base
+          retries += 1
+          STDERR.puts "encountered error #{error_object.inspect}, retrying attempt #{retries}."
+          retry
+        else
+          logger.error "encountered error #{error_object.inspect}, aborting."
+          raise error_object
         end
       end
-      nil
     end
-    
-    def merge_package_file(in_pipe,out_pipe,package_list)
-      sorted_list = package_list.sort { |a,b| a['Package'] <=> b['Package'] }
-      merge(in_pipe,out_pipe,sorted_list)
-    end
-    
+
     private 
-
-    def create_package_stub(package_hash)
-      return_value = ''
-      package_hash.each do |key,value|
-        return_value << "#{key}: #{value}\n"
-      end
-      return_value << "\n"
-    end
-
-    def merge(in_pipe,out_pipe,package_list)
-      return if out_pipe.closed? 
-      return if in_pipe.closed? and package_list.empty
-
-      if package_list.empty? 
-        while line = in_pipe.gets
-          out_pipe.puts line
-        end
-        in_pipe.close
-        out_pipe.close
-        return
-      end
-
-      if in_pipe.closed? 
-        package_list.each {|package_hash| out_pipe.write(create_package_stub(package_hash)) }
-        out_pipe.close 
-        return
-      end
-      
-      current_package, stub = parse_package_stub in_pipe
-
-      STDERR.puts "current_package.inspect is #{current_package.inspect}"
-      STDERR.puts "package_list.first is #{package_list.first['Package']}"
-      if current_package['Package'] < package_list.first['Package']
-        out_pipe.puts stub
-        out_pipe.puts ""
-        merge(in_pipe,out_pipe,package_list)
-        return
-      elsif current_package['Package'] > package_list.first['Package']
-        while ( ! package_list.empty? ) and current_package['Package'] > package_list.first['Package'] 
-          out_pipe.write create_package_stub(package_list.shift)
-        end
-      elsif current_package['Package'] == package_list.first['Package']
-        out_pipe.write create_package_stub(package_list.shift)
-      end
-      
-      merge(in_pipe,out_pipe,package_list)
-      return nil 
-    end
     
   end
 end

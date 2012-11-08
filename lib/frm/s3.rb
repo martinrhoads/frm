@@ -3,83 +3,73 @@ require 'aws-sdk'
 module FRM
   class S3  < Base
 
-    attr_reader :max_retries, :s3, :acl
-
-    def initialize(access_key_id,secret_access_key,public_repo=false)
-      @max_retries = 10
-      AWS.config(:access_key_id => access_key_id, 
-                 :secret_access_key => secret_access_key)
+    def initialize(opts={})
+      super()
+      @opts = opts
+      @opts[:public_repo] ||= false
+      @opts[:acl] = @opts[:public_repo] ? :public_read : :private
+      @opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
+      @opts[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
+      raise "you either need to pass an aws_access_key option or set the AWS_ACCESS_KEY environment variable" \
+        if @opts[:aws_access_key].nil?
+      raise "you either need to pass an aws_secret_key option or set the AWS_SECRET_KEY environment variable" \
+        if @opts[:aws_secret_key].nil?
+      raise "you need to pass in a bucket param" unless @opts[:bucket]
+      raise "you need to pass in a prefix param" unless @opts[:prefix]
+      @opts[:prefix] << '/' unless @opts[:prefix][-1] == '/'
+      AWS.config(:access_key_id => @opts[:access_key_id], 
+                 :secret_access_key => @opts[:secret_access_key])
       @s3 = AWS::S3.new
-      @acl = public_repo ? :public_read : :private
     end
-
     
-    def exists?(key,bucket)
-      @s3.buckets[bucket].objects[key].exists?
+    def exists?(relative_path)
+      handle_errors do 
+        return @s3.buckets[@opts[:bucket]].objects[full_path(relative_path)].exists?
+      end
     end
 
-    def etag(key,bucket)
+    def etag(relative_path)
+      quoted_etag = ""
+      handle_errors do 
+        quoted_etag = @s3.buckets[@opts[:bucket]].objects[full_path(relative_path)].etag
+      end
       # stupid method call is actually putting quotes in the string,
       # so let's remove those:
-      quoted_etag = @s3.buckets[bucket].objects[key].etag
       return quoted_etag.gsub(/"/,'')
     end
 
-    
-    def put(key,value,bucket)
-      @max_retries.times do |i|
-        begin
-          @s3.buckets[bucket].objects[key].write(value,acl: @acl)
-          return true
-        rescue Object => o
-          print_retry(__method__,o)
-        end
-        raise "could not put object!!!" if i == (@max_retries - 1)
+    def put(relative_path,value)
+      handle_errors do 
+        @s3.buckets[@opts[:bucket]].objects[full_path(relative_path)].write(value,acl: @opts[:acl]) # 
       end
-      raise "could not put object!!!"
+      return true
     end
     
-    
-    def get(key,bucket)
-      @max_retries.times do |i|
-        begin
-          return @s3.buckets[bucket].objects[key].read
-        rescue Object => o
-          print_retry(__method__,o)
-        end
-        raise "could not get object!!!" if i == (@max_retries - 1)
+    def get(relative_path)
+      handle_errors do 
+        return @s3.buckets[@opts[:bucket]].objects[full_path(relative_path)].read
       end
-      raise "could not get object!!!"
     end
     
-    
-    def delete(key,bucket)
-      begin
-        @s3.buckets[bucket].objects[object].delete
-        return true
-      rescue Object => o
-        print_retry(__method__,o)
+    def delete(relative_path)
+      handle_errors do 
+        @s3.buckets[@opts[:bucket]].objects[full_path(relative_path)].delete
       end
+      return true
     end
 
-
-    def move(old_key,new_key,bucket)
-      begin
-        @s3.buckets[bucket].objects[old_key].move_to(new_key)
-        return true
-      rescue Object => o
-        print_retry(__method__,o)
+    def move(old_relative_path,new_relative_path)
+      handle_errors do
+        @s3.buckets[@opts[:bucket]].objects[full_path(old_relative_path)].move_to(new_relative_path)
       end
+      return true
     end
 
     protected
 
-    def print_retry(action,error)
-      STDERR.puts "coudld not #{action} object because of:"
-      STDERR.puts error.inspect
-      STDERR.puts ", retrying..."
-      sleep 2
+    def full_path(relative_path="")
+      return @opts[:prefix] + relative_path
     end
-    
+
   end
 end

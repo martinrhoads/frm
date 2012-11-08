@@ -21,6 +21,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency('aws-sdk')
-
+  s.add_runtime_dependency "net-ntp", '~> 2.1.1'	
 end
 
