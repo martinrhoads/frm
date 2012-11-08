@@ -33,8 +33,6 @@ module FRM
       @opts[:gzipped_package_file] = generate_gzip_pipe(@opts[:package_file]).read
       @opts[:release_file] = release_file
 
-           STDERR.puts "release file is : \n#{@opts[:release_file]}"
-
       @opts[:package_file_size] = @opts[:package_file].size
       @opts[:gzipped_package_file_size] = @opts[:gzipped_package_file].size
       @opts[:release_file_size] = @opts[:release_file].size
@@ -87,8 +85,9 @@ EOF
     end
 
     def previous_package_file
-      return @opts[:remote_store].get(@opts[:package_file_path]) \
-        if @opts[:remote_store].exists? @opts[:package_file_path]
+      package_file_path = "dists/#{@opts[:release]}/#{@opts[:package_file_path]}"
+      return @opts[:remote_store].get(package_file_path) \
+        if @opts[:remote_store].exists? package_file_path
       return ""
     end
 
@@ -101,11 +100,11 @@ EOF
       return nil if stub_start.nil?
 
       # find the end of the first package section
-      stub_end = package_file.index(/^\n/,stub_start)
+      stub_end = package_file.index(/^$/,stub_start)
       raise "could not parse #{package_file}" if stub_end.nil?
 
       # extract out the next stub
-      stub = package_file.slice(stub_start,stub_end)
+      stub = package_file.slice(stub_start,stub_end) + "\n"
       raise "could not parse #{package_file}" if stub.nil?
 
       # pull out the package line from the stub
@@ -116,7 +115,7 @@ EOF
       package = package_line.sub('Package: ','').strip
       raise "could not read package name from #{stub}" if package.empty?
 
-      return convert_stub_to_hash(stub), stub_end, package
+      return stub, stub_end, package
     end
 
 
@@ -138,32 +137,40 @@ EOF
         if opts[:new_packages].empty?
           
       # parse next package stub
-      stub, stub_end, next_package = parse_package_stub(previous_package_file)
+      stub, stub_end, next_package = parse_package_stub(opts[:previous_package_file])
 
       # if we don't have and more old packages to add then return the
       # current list with the new appended
       return (opts[:new_package_file] << opts[:new_packages].collect{|p| FRM::Package.hash_to_stub(p)}.join("\n")) if stub.nil?
 
       # compare the next previous existing pacakge to the next new package
-      case next_package <=> opts[:new_packages]['Package']
+      case next_package <=> opts[:new_packages].first['Package']
       when -1 
         opts[:new_package_file] << stub
-        opts[:previous_package_file].slice(stub_end)
+        opts[:previous_package_file].slice!(0..stub_end)
       when 1
-        opts[:new_package_file] << opts[:new_packages].shift.to_stub
+        opts[:new_package_file] << FRM::Package.hash_to_stub(opts[:new_packages].shift) 
       when 0
         # both packages have the same name
-
+        STDERR.puts "I see two version of this pakcage: #{next_package}"
         previous_version_line = stub[/^Version: .*$/]
         raise "could not get version from package stub: \n#{stub}" if previous_version_line.nil?
 
-        previous_version = previous_version_line.sub('Version: ','').strip
-        raise "could not get version from package stub: \n#{stub}" if previous_version.empty?
+        previous_version_raw = previous_version_line.sub('Version: ','').strip
+        raise "could not get version from package stub: \n#{stub}" if previous_version_raw.empty?
+        previous_version = Gem::Version.new(previous_version_raw)
 
-        newer_version = opts[:new_packages][Version]
-        raise "previous version #{previous_version} is newer than #{newer_version}"
+        newer_version_raw = opts[:new_packages].first['Version']
+        newer_version = Gem::Version.new(newer_version_raw)
+
+        raise "previous version #{previous_version_raw} is equal to #{newer_version_raw}. Exiting..." \
+          if previous_version == newer_version
+
+        raise "previous version #{previous_version_raw} is newer than #{newer_version_raw}. Exiting..." \
+          if previous_version > newer_version
         
-        opts[:new_package_file] << opts[:new_packages].shift.to_stub
+        opts[:new_package_file] << FRM::Package.hash_to_stub(opts[:new_packages].shift)
+        opts[:previous_package_file].slice!(0..stub_end)
       end
 
       return merge_package_files(opts)

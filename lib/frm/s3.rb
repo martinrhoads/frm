@@ -8,8 +8,8 @@ module FRM
       @opts = opts
       @opts[:public_repo] ||= false
       @opts[:acl] = @opts[:public_repo] ? :public_read : :private
-      @opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY']
-      @opts[:aws_secret_key] ||= ENV['AWS_SECRET_KEY']
+      @opts[:aws_access_key] ||= ENV['AWS_ACCESS_KEY_ID']
+      @opts[:aws_secret_key] ||= ENV['AWS_SECRET_ACCESS_KEY']
       raise "you either need to pass an aws_access_key option or set the AWS_ACCESS_KEY environment variable" \
         if @opts[:aws_access_key].nil?
       raise "you either need to pass an aws_secret_key option or set the AWS_SECRET_KEY environment variable" \

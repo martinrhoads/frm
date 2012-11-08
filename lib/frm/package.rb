@@ -23,11 +23,11 @@ module FRM
     end
 
     def to_stub
-      @info.collect{|k,v| "#{k}: #{v}"}.join("\n") + "\n"
+      @info.collect{|k,v| "#{k}: #{v}"}.join("\n") + "\n\n"
     end
 
     def self.hash_to_stub(hash)
-      hash.collect{|k,v| "#{k}: #{v}"}.join("\n") + "\n"
+      hash.collect{|k,v| "#{k}: #{v}"}.join("\n") + "\n\n"
     end
 
     def to_h

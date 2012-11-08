@@ -24,13 +24,13 @@ FRM allows you to easily create debian repos on S3
 
 Usage: frm [options] package1 [package2] ..."
 
-  options[:access_key] = ENV['AWS_ACCESS_KEY']
+  options[:access_key] = ENV['AWS_ACCESS_KEY_ID']
   opts.on( '-a', '--access-key ACCESS_KEY', 'S3 public access key' ) do |key|
     options[:access_key] = key
   end
 
 
-  options[:secret_key] = ENV['AWS_SECRET_KEY']
+  options[:secret_key] = ENV['AWS_SECRET_ACCESS_KEY']
   opts.on( '-s', '--secret-key SECRET_KEY', 'S3 private access key' ) do |key|
     options[:secret_key] = key
   end
